@@ -16,6 +16,8 @@ defmodule ExpressionTest do
   test "Calculate more complex expression" do
     assert Expression.calculate('12+3*5+3') == 30
     assert Expression.calculate('12+6*5/2+3*2-1') == 32
+    assert Expression.calculate('12+2^3*5-2+3*2-1') == 55
+    assert Expression.calculate('12+5*3^2-2+3*2-1') == 60
   end
 end
 

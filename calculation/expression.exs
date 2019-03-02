@@ -1,5 +1,7 @@
 defmodule Expression.Guards do
-  defguard higher_priority(op1, op2) when op1 in ["*", "/"] and op2 in ["+", "-"]
+  defguard higher_priority(op1, op2)
+           when (op1 in ["^", "*", "/"] and op2 in ["+", "-"]) or
+                  (op1 in ["^"] and op2 in ["*", "/", "+", "-"])
 end
 
 defmodule Expression do
@@ -21,6 +23,7 @@ defmodule Expression do
   defp operation("-"), do: fn a, b -> a - b end
   defp operation("*"), do: fn a, b -> a * b end
   defp operation("/"), do: fn a, b -> a / b end
+  defp operation("^"), do: &:math.pow/2
 
   defp parse_exp([left_num, op, right_num | rest]) do
     parse_exp(rest, {op, left_num, right_num})
