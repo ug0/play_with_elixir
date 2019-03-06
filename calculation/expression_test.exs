@@ -19,5 +19,9 @@ defmodule ExpressionTest do
     assert Expression.calculate('12+2^3*5-2+3*2-1') == 55
     assert Expression.calculate('12+5*3^2-2+3*2-1') == 60
   end
+
+  test "Calculate expression with parentheses" do
+    assert Expression.calculate('(3+5)*2-35/(7-2)') == 9
+  end
 end
 
