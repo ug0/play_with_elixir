@@ -14,11 +14,6 @@ defmodule Hanoi do
     move(state, num_of_plates - 1, spare, to, from)
   end
 
-  def move_iter(state, 0, _from, _to, _spare), do: {:done, state}
-  def move_iter(state, num_of_plates, from, to, spare) do
-
-  end
-
   def make_one_move(state, from, to) do
     display state
 
