@@ -15,7 +15,7 @@ defmodule ShapesTest do
              * * * * *
              * * * * *
              """
-             |> String.strip()
+             |> String.trim()
   end
 
   test "rectangle" do
@@ -27,7 +27,7 @@ defmodule ShapesTest do
              *   *
              * * *
              """
-             |> String.strip()
+             |> String.trim()
 
     assert Shapes.rectangle(4, 8) ==
              """
@@ -36,7 +36,7 @@ defmodule ShapesTest do
              *             *
              * * * * * * * *
              """
-             |> String.strip()
+             |> String.trim()
   end
 
   test "pyramid" do
@@ -60,6 +60,16 @@ defmodule ShapesTest do
              * * *
               * *
                *
+           """ |> String.trim_trailing()
+  end
+
+  test "pascal triangle" do
+    assert Shapes.pascal_triangle(5) == """
+               1
+              1 1
+             1 2 1
+            1 3 3 1
+           1 4 6 4 1
            """ |> String.trim_trailing()
   end
 end
