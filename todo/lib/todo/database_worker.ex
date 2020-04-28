@@ -1,40 +1,47 @@
 defmodule Todo.DatabaseWorker do
   use GenServer
 
-  def start(folder) do
-    GenServer.start(__MODULE__, folder)
+  def start_link({dir, worker_id}) do
+    IO.puts("Starting database worker #{worker_id}.")
+
+    GenServer.start_link(__MODULE__, dir, name: via_tuple(worker_id))
   end
 
-  def store(worker, key, data) do
-    GenServer.cast(worker, {:store, key, data})
+  def store(worker_id, key, data) do
+    GenServer.cast(via_tuple(worker_id), {:store, key, data})
   end
 
-  def get(worker, key) do
-    GenServer.call(worker, {:get, key})
+  def get(worker_id, key) do
+    GenServer.call(via_tuple(worker_id), {:get, key})
   end
 
-  def init(folder) do
-    {:ok, folder}
+  defp via_tuple(worker_id) do
+    Todo.ProcessRegistry.via_tuple({__MODULE__, worker_id})
   end
 
-  def handle_cast({:store, key, data}, state) do
-    file_name(state, key)
+  def init(dir) do
+    File.mkdir_p!(dir)
+    {:ok, dir}
+  end
+
+  def handle_cast({:store, key, data}, dir) do
+    dir
+    |> file_name(key)
     |> File.write!(:erlang.term_to_binary(data))
 
-    {:noreply, state}
+    {:noreply, dir}
   end
 
-  def handle_call({:get, key}, _caller, state) do
-    data =
-      case File.read(file_name(state, key)) do
-        {:ok, contents} -> :erlang.binary_to_term(contents)
-        _ -> nil
-      end
+  def handle_call({:get, key}, _, dir) do
+    data = case File.read(file_name(dir, key)) do
+      {:ok, contents} -> :erlang.binary_to_term(contents)
+      _ -> nil
+    end
 
-    {:reply, data, state}
+    {:reply, data, dir}
   end
 
-  def file_name(folder, key) do
-    Path.join(folder, to_string(key))
+  defp file_name(dir, key) do
+    Path.join(dir, to_string(key))
   end
 end

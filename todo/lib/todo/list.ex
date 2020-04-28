@@ -4,7 +4,7 @@ defmodule Todo.List do
   def new(entries \\ []) do
     Enum.reduce(
       entries,
-      %Todo.List{},
+      %__MODULE__{},
       &add_entry(&2, &1)
     )
   end
@@ -13,7 +13,7 @@ defmodule Todo.List do
     entry = Map.put(entry, :id, todo_list.auto_id)
     new_entries = Map.put(todo_list.entries, todo_list.auto_id, entry)
 
-    %Todo.List{todo_list | entries: new_entries, auto_id: todo_list.auto_id + 1}
+    %__MODULE__{todo_list | entries: new_entries, auto_id: todo_list.auto_id + 1}
   end
 
   def entries(todo_list, date) do
@@ -34,11 +34,11 @@ defmodule Todo.List do
       {:ok, old_entry} ->
         new_entry = updater_fun.(old_entry)
         new_entries = Map.put(todo_list.entries, new_entry.id, new_entry)
-        %Todo.List{todo_list | entries: new_entries}
+        %__MODULE__{todo_list | entries: new_entries}
     end
   end
 
   def delete_entry(todo_list, entry_id) do
-    %Todo.List{todo_list | entries: Map.delete(todo_list.entries, entry_id)}
+    %__MODULE__{todo_list | entries: Map.delete(todo_list.entries, entry_id)}
   end
 end
