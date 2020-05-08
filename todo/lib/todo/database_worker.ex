@@ -6,7 +6,7 @@ defmodule Todo.DatabaseWorker do
   end
 
   def store(worker_id, key, data) do
-    GenServer.cast(worker_id, {:store, key, data})
+    GenServer.call(worker_id, {:store, key, data})
   end
 
   def get(worker_id, key) do
@@ -14,23 +14,23 @@ defmodule Todo.DatabaseWorker do
   end
 
   def init(dir) do
+    dir = Path.join(dir, to_string(node()))
     File.mkdir_p!(dir)
     {:ok, dir}
   end
 
-  def handle_cast({:store, key, data}, dir) do
+  def handle_call({:store, key, data}, _, dir) do
     dir
     |> file_name(key)
     |> File.write!(:erlang.term_to_binary(data))
 
-    {:noreply, dir}
+    {:reply, :ok, dir}
   end
 
   def handle_call({:get, key}, _, dir) do
     data = case File.read(file_name(dir, key)) do
       {:ok, contents} -> :erlang.binary_to_term(contents)
-      _ -> nil
-    end
+      _ -> nil end
 
     {:reply, data, dir}
   end
